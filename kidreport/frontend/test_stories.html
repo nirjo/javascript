@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>student detail</title>
+	
+<link href="css/Style.css" rel="stylesheet">
+<link href="javascript2.0/jqueryUI/jquery-ui.css" rel="stylesheet">	
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<script src="javascript2.0/lib/jquery-1.11.0.js" type="text/javascript"></script>
+<script src="javascript2.0/jqueryUI/jquery-ui.js" type="text/javascript"></script>
+<script src="javascript2.0/lrsConfig.dev.js" type="text/javascript"></script>
+<script src="javascript2.0/lib/paper-full.js" type="text/javascript"></script>
+<script src="javascript2.0/lrsTree.dev.js" type="text/javascript"></script>
+<script src="javascript2.0/lrsFunctions.dev.js" type="text/javascript"></script>
+<script type="text/javascript" >
+		
+		var ajaxCallReturnCounter =0;
+		var kreportcenterId = "1166";
+		var kreportStudentId= "71301"	;//primary key of student in  kids report
+		var kreportStudentName= "Lance Chris";
+		var kreportStudentdob= "02/18/2015"; // date must be mm/dd/yyyy format
+		//kreportStudentdob = format_date(kreportStudentdob);
+		
+		
+		var kreportTeacherId = "3333366";//primary key of teacher in  kids report
+		var teacherName = "Moin2";
+
+
+		var story_tag_handler = null;
+		
+		function postCommentCallback(status ,comment){
+		alert('postCommentCallback');
+		}
+		
+		function postComment(story_id,comment){
+			insertComment(story_id,comment, postCommentCallback);
+			
+		}		
+		
+				
+         $(document).ready(function() {  	
+		 
+/*			$.getJSON(configURL.warmupURL, function(result){
+			
+			});*/
+			function updateTagsCallback(status,story){
+					console.log('inside updateTagsCallback ');
+					console.log(story);
+					
+			}
+		
+			story_tag_handler = tag_handler(kreportStudentId, updateTagsCallback);	
+			function manageStudentCallback(student){
+				
+			}
+			manageStudent(kreportcenterId,kreportStudentId,kreportStudentName,kreportStudentdob,manageStudentCallback);	
+		
+		
+			$( "#btnCreateDummyStory" ).click(function() {
+				//alert(teacherName);
+				var n  = Math.floor(Math.random() * 8) + 1  ; // create a random num between 1 and 8
+				//n=7;
+				var start_date= "0"+n+"/23/2015";
+				var end_date= "0"+n+"/29/2015";
+				
+				var details= "MY DETAIL 0"+n;
+				var title= "MY TITLE 0"+n;
+				var status= "PUBLISHED";				
+				saveStory( details, title, status,start_date, end_date, kreportStudentId, kreportcenterId,kreportTeacherId,teacherName,saveStoryCallback);
+			});
+		
+         });		
+		
+		
+		function retriveStoriesCallback(stories){
+				/*stories is an array of Story object like following
+					{
+						centerId: ""
+						details:""
+						id:""					
+						status:""
+						title:""
+					}
+				*/
+				
+			console.log("retriveStoriesCallback");
+			console.log(stories);
+			$("#stories").empty();
+			for(var index = 0; index<stories.length;index++){
+				var temp="<div class='a_story>";
+				temp += "<p class='story_title'>Title: "+stories[index].title+"<input type = 'button' class='btn_tag_story' value='Tag' onClick='story_tag_handler.open_tag_modal("+stories[index].id+")'/></p> ";
+				temp += "<p class='story_details'>Details: "+stories[index].details+"</p>";
+				temp += "<p class='story_details'>Created by: "+stories[index].teacherName+"</p>";
+				temp += "<p class='story_details'  >Comment: <textarea id='"+stories[index].id+"'></textarea>";
+				temp += "<input type='button' value='post Comment' onClick=\"postComment("+stories[index].id+",document.getElementById("+ stories[index].id +").value);\" /></p>";
+				temp += "<hr/>";
+				temp += "</div>";
+				$("#stories").append(temp);
+				
+			}
+					
+			
+			
+		}
+		//retriveStories(kreportStudentId,retriveStoriesCallback);
+		function saveStoryCallback(status,story){
+			ajaxCallReturnCounter++;
+			if(ajaxCallReturnCounter==12){
+				retriveStoriesBykreportStudentIdAndDate("71301","01/01/2016", "03/30/2017", retriveStoriesCallback);
+			}
+			console.log("inside saveStoryCallback");
+			console.log("ajaxCallReturnCounter="+ajaxCallReturnCounter);
+			console.log(story);
+			if(status==1){
+				//add your code here to process a successful insert
+				//the following infromation are available from LRS
+				//story.id = story id in LRS
+				//story.details =  story details
+				//story.title = story title or name
+				//story.status = story status
+				//story.centerId = centerId  in LRS
+				//story.kreportTeacherId = teacher id in KR 
+				//story.teacherName = teacher name  in KR
+				//story.startDate = teacher name  in KR
+				//story.endDate = teacher name  in KR
+				retriveStories(kreportStudentId,retriveStoriesCallback);				
+				
+			}else if(status==0){
+				//add your code here to process a failed insert
+			}
+			
+		}
+		//saveStory( details, title, status,start_date, end_date, kreportStudentId, kreportcenterId,kreportTeacherId,teacherName,saveStoryCallback);		
+		function retriveStoryCallback(story){
+			console.log(story);
+		
+		}	
+	
+		///retriveStoryById(story_id,retriveStoryCallback);		
+		function updateStoryCallback(status, story){
+			if(status == 1){//story successfully updated
+				console.log(story)
+			
+			}else{// failed to update the story.
+				console.log('problem')
+			}
+		
+		}
+		//updateStory( details, title, status,start_date, end_date,story_id, updateStoryCallback);
+		
+		
+		function deleteStoryCallback(status){
+			if(status==1){
+				// add code to handle a successful delete
+			}else{
+				// add code to handle a failed delete
+			}
+		
+		
+		}
+		//deleteStory(story_id,deleteStoryCallback)
+	
+		function getStoryCallback(status,data){
+			if(status==1){
+				// add code to handle a successful delete
+				console.log(data);
+			}else{
+				// add code to handle a failed delete
+			}
+		
+		
+		}		
+		//getStory(story_id,getStoryCallback);
+		
+		function retriveStoriesBykreportStudentIdAndStatusCallback(data){
+			// first story
+			// data[0].id 
+			// data[0].centerId
+			// data[0].title
+			// data[0].details
+			// data[0].status
+			// data[0].kreportTeacherId
+			// data[0].teacherName
+			// data[0].startDate
+			// data[0].endDate
+			// data[0].kreportStudentId
+			// data[0].studentId
+			// data[0].outcomeId
+
+			// second story
+			// data[1].id 
+			// ...
+			console.log(data);
+			
+		}
+		//retriveStoriesBykreportStudentIdAndStatus(20,'PUBLISHED',retriveStoriesBykreportStudentIdAndStatusCallback)
+		
+		function create12Stories(){
+			//mm/dd/yy
+			var start_date = ["03/01/2016", "04/01/2016", "05/01/2016", "06/01/2016",  "07/01/2016",  "08/01/2016",  "09/01/2016","10/01/2016","11/01/2016", "12/01/2016" , "01/01/2017", "02/01/2017"];
+			var end_date = ["03/05/2016", "04/05/2016", "05/05/2016", "06/05/2016",  "07/05/2016",  "08/05/2016",  "09/05/2016","10/05/2016","11/05/2016", "12/05/2016" , "01/05/2017", "02/05/2017"];
+				/*for(var index=0;index<start_date.length;index++){
+				
+					var sdate= start_date[index];
+					var edate= end_date[index];
+					
+					var details= "Moins details";
+					var title= "this is a story of  "+start_date[index];
+					var status= "PUBLISHED";				
+					saveStory( details, title, status,sdate, edate, kreportStudentId, kreportcenterId,kreportTeacherId,teacherName,saveStoryCallback);
+				
+				}*/
+		
+					
+					var sdate= "02/01/2016";
+					var edate= "02/03/2016";
+					
+					var details= "abcd";
+					var title= "abcd";
+					var status= "PUBLISHED";				
+					function retriveStoryCallback(data){
+						alert(JSON.stringify(data));
+					}
+					function updateTagsCallback(status,data){
+						
+					}
+					
+				//6228004569088000
+				//71301
+					var story_tag_handler = tag_handler("71301", updateTagsCallback);	
+					//story_tag_handler.updateTags("6245188464803840", [1,2,3], updateTagsCallback());
+					//story_tag_handler.open_tag_modal("6245188464803840");
+					//updateStoryByStoryIdAndKRStudentId( "olddetails", "oldtitle", "DRAFT","10/10/2016", "12/12/2016","6245188464803840","71301", updateTagsCallback);
+					//story_id,KR_student_id,deleteStoryCallback
+					//deleteStoryByStoryIdAndKRStudentId("6245188464803840","71301", updateTagsCallback);
+					//saveStory( details, title, status,sdate, edate, 71301, kreportcenterId,kreportTeacherId,teacherName,saveStoryCallback);
+					//retriveStoryByIddAndKRStudentId("6228004569088000","71301",retriveStoryCallback)
+					getStorybyStoryIdAndKRStudentId("6228004569088000","71301",retriveStoryCallback)
+					
+					
+			
+		}
+	</script>		
+</head>
+<body>
+
+<div id="my_debug"></div>
+<input type='button' id="btnCreateDummyStory" value="Create Story"/>
+<input type='button' id="btnCreate12Story" value="Create 12 Stories" onClick="create12Stories()"/>
+<div id="stories">
+
+</div>
+<div   id="tag_modal" style="width:750px;">
+			<input type = 'hidden' id = 'existing_outcomeid' value ='-1' />
+			<input type = 'hidden' id = 'existing_storyid' value ='-1' />
+			
+			<input type="hidden" id="centerId" name="centerId" value="" />
+			<div id="tabs">
+				<ul id ="tabs_ul">
+			 
+				</ul>
+		  
+			</div>	
+			<button class="btn btn-primary btn-xs" type="button" id ="btnSave">Save & Close</button>
+</div>
+	<script  type="text/javascript" >
+	function  leaf_clicked_callback(story_id, story_title, story_detail, strand_id, strand_name, outcome_id, outcome_name){
+		
+		console.log("story_id:"+story_id);
+		console.log("story_title:"+story_title);
+		console.log("story_detail:"+story_detail);
+		console.log("strand_id:"+strand_id);
+		console.log("strand_name:"+strand_name);
+		console.log("outcome_id:"+outcome_id);
+		console.log("outcome_name:"+outcome_name);
+		
+		console.log("inside leaf clicked");
+	}
+	 
+	function  leaf_mouse_over_callback(story_id, story_title, story_detail, strand_id, strand_name, outcome_id, outcome_name){
+		$("#leaf-label").html("<b>Strand:</b>"+strand_name+"<b>Outcome:</b>"+outcome_name);
+		//console.log("inside leaf over");
+	}
+	
+	function  leaf_mouse_exit_callback(story_id, story_title, story_detail, strand_id, strand_name, outcome_id, outcome_name){
+		$("#leaf-label").html("");
+		//console.log("inside leaf over");
+	}
+	//showTree(kreportStudentId,age,status, leaf_clicked_callback,leaf_mouse_over_callback,leaf_mouse_exit_callback)
+	//age = 0; // (strories between 0 to 12 months of age)
+	//age = 1; // (strories between 13 to 24 months of age)
+	//age = 2; // (strories between 25 to 36 months of age).... and so on 
+	retriveStoriesBykreportStudentIdAndDate("71301","01/01/2016", "03/30/2017", retriveStoriesCallback);
+	</script>
+
+<br/>
+<br/>
+<input type="button" onClick="showTree('71301', 1, 'PUBLISHED', leaf_clicked_callback,leaf_mouse_over_callback,leaf_mouse_exit_callback)" value="show Tree"/>
+<div id = "canvas_div" style="display:none;">
+		<input type= "hidden" value="-1" id="student_birth_month" >
+		<table>
+			<tr>
+				<td><canvas style="border:1px black;" id="canvas" width="593" height="800" ></canvas></canvas>
+				</td>
+				<td text-align="top">
+					<span id="leaf-label"></span>
+				</td>
+			</tr>
+		</table>
+</div>	
+<!--<div class="modal"></div>-->
+</body>
+</html>

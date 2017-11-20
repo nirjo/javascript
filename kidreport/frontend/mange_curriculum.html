@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+
+<html>
+<head>
+<title>Manage Curriculum</title>
+		<link href="css/Style.css" rel="stylesheet">
+		<!-- library starts here -->
+			<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+			<script src="javascript2.0/lib/jquery-1.11.0.js" type="text/javascript"></script>
+			<script src="bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+			<script src="javascript2.0/lib/knockout-3.4.0.js" type="text/javascript"></script>
+			<script src="javascript2.0/lib/knockout.validation.min.js" type="text/javascript"></script>
+			<script src="javascript2.0/lib/configureknockout.js" type="text/javascript"></script>
+			<script src="javascript2.0/lib/knockout.simpleGrid.3.0.js" type="text/javascript"></script>
+		<!-- library ends here -->
+	
+		<script src="javascript2.0/lrsConfig.devtest.js" type="text/javascript"></script>		
+		<script src="javascript2.0/modal_handler.js" type="text/javascript"></script>
+		<script src="javascript2.0/modal_data.js" type="text/javascript"></script>  
+		<script src="javascript2.0/client_data.js" type="text/javascript"></script>
+		<script src="javascript2.0/grid_data.js" type="text/javascript"></script>
+		<script src="javascript2.0/tabs_data.js" type="text/javascript"></script>
+		<script src="javascript2.0/view_index.js" type="text/javascript"></script>
+		<script src="javascript2.0/curriculum_functions.js" type="text/javascript"></script>
+		
+        <script type="text/javascript">
+		var randomString = function(length) {
+			var text = "";
+			var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+			for(var i = 0; i < length; i++) {
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+			}
+			return text;
+		}
+         $(document).ready(function() {		
+	/*		$.getJSON(configURL.warmupURL, function(result){
+			
+			});*/
+	 
+			$('#createNewCenter').click(function() {
+				
+				if ($(this).is(':checked')) {
+				// Do stuff
+					var center_name = randomString(7);
+					var center_id =  new Date().getTime()%100000;
+					$( "#centerName" ).val(center_name);
+					$( "#centerId" ).val(center_id);
+				}
+			});
+		
+		   $( "#manage_curriculum" ).click(function() {
+				
+				var kreportCenterId = "99008";//primary key of center in  kids report
+				var center_name = "sumon99" ;
+				
+				if ($("#createNewCenter").is(':checked')) {
+					kreportCenterId = $( "#centerId" ).val();//primary key of center in  kids report
+					 center_name = $( "#centerName" ).val() ;
+				}
+		   
+				manage_curriculum(kreportCenterId,center_name);
+			});
+		   
+         });
+		</script>	
+</head>
+<body>
+<div id="my_debug"></div>
+<input type="checkbox" id="createNewCenter"/><br/><br/>
+Name: <input type="text" id="centerName"/><br/><br/>
+KRId:<input type="text" id="centerId"/><br/><br/>
+  <input type = "button" value ="Manage Curriculum" id="manage_curriculum"/>
+	<div class="modal"></div>
+      <div class="container">
+	  
+         <div >
+            <!-- class="panel panel-default" -->
+            <div>
+               <!--  class="panel-body" -->
+               <div  id="center_modal"  class="modal fade" data-bind=
+                  "modal:index_view.center_modal.showDialog" role="dialog" tabindex="-1">
+                  <div class="modal-dialog modal-lg">
+                     <div class="modal-content" data-bind=
+                        "visible:index_view.center_modal.doSomething">
+                        <div class="modal-header">
+                           <!--<button class="close" data-dismiss="modal" type=
+                              "button">&times;</button>-->
+                           <h4 class="modal-title">Manage Curriculum</h4>
+                        </div>
+                        <div class="modal-body">
+                           <div class="panel panel-default" style="padding:10px;">
+                              
+                              <div data-bind=
+                                 "foreach: index_view.tabs_curriculum.getTabs()" id=
+                                 "lefttabs">
+                                 <div class="lefttab" style="border:none;" data-bind=
+                                    "css: {selected: index_view.tabs_curriculum.selected_tab() == data.id()}, text: data.name, click: index_view.tabs_curriculum.selected_tab.bind($parent, data.id())">
+                                 </div>
+                              </div>
+                              <div data-bind=
+                                 "foreach: index_view.tabs_curriculum.getTabs()" id=
+                                 "lefttabContent" style="padding:0px;margin:0px;padding-top:35px;border:none;">
+                                 <div data-bind=
+                                    "if: index_view.tabs_curriculum.selected_tab() == data.id()">
+                                    <!-- strand tabs starts--->
+                                    <div class="panel-body">
+                                       <div data-bind="foreach: index_view.tabs_strands.getTabs()"
+                                          id="strandTabs">
+                                          <div class="tab" data-bind=
+                                             "css: {selected: index_view.tabs_strands.selected_tab() == data.id()}, text: data.name(), click: index_view.tabs_strands.selected_tab.bind($parent, data.id())">
+                                          </div>
+                                       </div>
+                                       <div data-bind=
+                                          "foreach: index_view.tabs_strands.getTabs()"
+                                          id="strandTabsContent">
+                                          <div data-bind=
+                                             "if: index_view.tabs_strands.selected_tab() == data.id()">
+                                             <div class="panel panel-default"  style="padding:10px;">
+                                                <div data-bind=
+                                                   "foreach: index_view.tabs_goals.getTabs()" id=
+                                                   "goalTabs">
+                                                   <div class="goalTab" data-bind=
+                                                      "css: {selected: index_view.tabs_goals.selected_tab() == data.id()}, text:('Goal ' + ($index() + 1) ), click: index_view.tabs_goals.selected_tab.bind($parent, data.id())">
+                                                   </div>
+                                                </div>
+                                                <div data-bind=
+                                                   "foreach: index_view.tabs_goals.getTabs()" id=
+                                                   "goalTabsContent">
+                                                   <div data-bind=
+                                                      "if: index_view.tabs_goals.selected_tab() == data.id()">
+                                                      <p>
+                                                         <span data-bind="text:('Goal ' + ($index() + 1) )"></span>&nbsp;-&nbsp;<span data-bind="text:data.goalTitle()"></span>
+                                                      <hr/>
+                                                      </p>
+                                                      <table class="table">
+                                                         <thead>
+                                                            <tr>
+                                                               <th>Outcome</th>
+                                                               <th>Edit&nbsp;|&nbsp;Delete</th>			
+                                                            </tr>
+                                                         </thead>
+                                                         <tbody data-bind="foreach: index_view.outcome_grid.tblData">
+                                                            <tr data-bind=
+                                                               "if: displayMode() === index_view.outcome_grid.displayMode.view">
+                                                               <td data-bind="text: data.outcomeText()"></td>
+                                                               <td>
+                                                                  <a data-bind="click: index_view.editOutcome"
+                                                                     href="">Edit</a>&nbsp;|&nbsp;<a data-bind=
+                                              "click: index_view.deleteOutcome"  href=
+                                              "">Delete</a>
+                                                               </td>
+                                                            </tr>
+                                                            <tr data-bind=
+                                                               "if: displayMode() === index_view.outcome_grid.displayMode.edit">
+                                                               <td><input class="form-control" data-bind=
+                                                                  "value: data.outcomeText" type="text"></td>
+                                                               <td>
+                                                                  <a data-bind=
+                                                                     "visible: data.id() != null, click: index_view.updateOutcome"
+                                                                     href="">Update</a> <a data-bind=
+                                                                     "visible: data.id() == null, click: index_view.saveOutcome"
+                                                                     href="">Save</a>&nbsp;|&nbsp;<a data-bind=
+                                                                     "click: index_view.cancelOutcome" href=
+                                                                     "">Cancel</a>
+                                                               </td>
+                                                            </tr>
+                                                         </tbody>
+                                                      </table>
+                                                      <p>
+                                                         <!--visible: index_view.flgAddNewGoal()==true-->    
+                                                         <input class="form-control" data-bind=
+                                                            "value: data.goalTitle,visible: index_view.flgEditGoal()==true"  type="text">	
+                                                      </p>
+                                                      <p>
+                                                         <button class="btn btn-primary btn-xs" data-bind=
+                                                            "click : index_view.editGoal,visible: index_view.flgEditGoal()==false" type=
+                                                            "button" style="background-color:#5bc0de;">Edit Goal</span>
+                                                         </button>
+                                                         <button class="btn btn-primary btn-primary btn-xs" data-bind=
+                                                            "click : index_view.addOutcome" type=
+                                                            "button" style="background-color:#4a87ee !important;" >+ Add an Outcome</button>
+                                                         <!--,visible: index_view.flgEditStrand()==false-->
+														 
+                                                         <button class="btn btn-primary btn-xs" data-bind=
+                                                            "click : index_view.saveGoalName,visible: index_view.flgEditGoal()==true" type=
+                                                            "button" style="background-color:#f9a42c;">Save Goal
+                                                         </button>
+                                                         <button class="btn btn-danger btn-xs" data-bind=
+                                                            "click : index_view.cancelEditGoal,visible: index_view.flgEditGoal()==true" type=
+                                                            "button">Cancel														
+                                                         </button>	
+                                                      </p>
+                                                   </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                   <p>
+                                                      <input class="form-control" data-bind=
+                                                         "value: data.name,visible: index_view.flgEditStrand()==true"  type="text">
+                                                      <input class="form-control" data-bind=
+                                                         "value: index_view.newGoalTitle,visible: index_view.flgAddNewGoal()==true"  type="text">
+                                                   </p>
+                                                   <p>
+                                                      <button class="btn btn-primary btn-xs" data-bind=
+                                                         "click : index_view.editStrand,visible: index_view.flgEditStrand()==false" type=
+                                                         "button" style="background-color:#5bc0de;">Edit <span data-bind="text:data.name()"></span>
+                                                      </button>
+                                                      <button class="btn btn-primary btn-xs" data-bind=
+                                                         "click : index_view.saveStrandName,visible: index_view.flgEditStrand()==true" type=
+                                                         "button" style="background-color:#f9a42c;">Save Strand
+                                                      </button>
+                                                      <button class="btn btn-primary btn-danger btn-xs" data-bind=
+                                                         "click : index_view.cancelEditStrand,visible: index_view.flgEditStrand()==true" type=
+                                                         "button">Cancel														
+                                                      </button>
+                                                      <button class="btn btn-primary btn-xs" data-bind=
+                                                         "click : index_view.addNewGoal" type=
+                                                         "button" style="background-color:#4a87ee !important;">+ Add New Goal
+                                                      </button>
+                                                      <button class="btn btn-primary btn-xs" data-bind=
+                                                         "click : index_view.saveNewGoal,visible: index_view.flgAddNewGoal()==true" type=
+                                                         "button"  style="background-color:#f9a42c !important;">Save Goal
+                                                      </button>
+                                                      <button class="btn btn-danger btn-xs" data-bind=
+                                                         "click : index_view.cancelAddNewGoal,visible: index_view.flgAddNewGoal()==true" type=
+                                                         "button">Cancel														
+                                                      </button>
+                                                   </p>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                       <div class="modal-footer">
+                                          <!-- strand tabs ends--->
+                                          <p>
+                                             <input class="form-control" data-bind=
+                                                "value: data.name,visible: index_view.flgEditCurriculum()==true"  type="text">
+                                             <input class="form-control" data-bind=
+                                                "value: index_view.newStrandName,visible: index_view.flgAddNewStrand()==true"  type="text">
+                                          </p>
+                                          <p>
+                                             <button class="btn btn-primary btn-xs" data-bind=
+                                                "click : index_view.editCurriculum,visible: index_view.flgEditCurriculum()==false" type=
+                                                "button" style="background-color:#5bc0de;">Edit <span data-bind="text:data.name()"></span>
+                                             </button>
+                                             <button class="btn btn-primary btn-xs" data-bind=
+                                                "click : index_view.saveCurriculumName,visible: index_view.flgEditCurriculum()==true" type=
+                                                "button" style="background-color:#f9a42c;">Save Curriculum
+                                             </button>
+                                             <button class="btn btn-danger btn-xs" data-bind=
+                                                "click : index_view.cancelEditCurriculum,visible: index_view.flgEditCurriculum()==true" type=
+                                                "button">Cancel														
+                                             </button>
+                                             <button class="btn btn-primary btn-xs" data-bind=
+                                                "click : index_view.addNewStrand" type=
+                                                "button" style="background-color:#4a87ee !important;display:none;">+ Add New Strand
+                                             </button>
+                                             <button class="btn btn-primary btn-xs" data-bind=
+                                                "click : index_view.saveNewStrand,visible: index_view.flgAddNewStrand()==true" type=
+                                                "button"  style="background-color:#f9a42c;">Save Strand
+                                             </button>
+                                             <button class="btn btn-danger btn-xs" data-bind=
+                                                "click : index_view.cancelAddNewStrand,visible: index_view.flgAddNewStrand()==true" type=
+                                                "button">Cancel														
+                                             </button>
+                                          </p>
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <!-- curriculum tabs ends-->
+                              </div>
+                              <!--<div class="modal-footer">
+                                 <p>
+                                    <input class="form-control" data-bind=
+                                       "value: index_view.newCurriculumName,visible: index_view.flgAddNewCurriculum()==true"  type="text">
+                                 </p>
+                                 <p>
+                                    <button class="btn btn-primary btn-xs" data-bind=
+                                       "click : index_view.addCurriculum,visible: index_view.flgAddNewCurriculum()==false" type=
+                                       "button" style="background-color:#4a87ee !important;display:none !important;">+ Add New Curriculum</button>
+                                    <button class="btn btn-danger btn-xs" data-bind=
+                                       "click : index_view.cancelAddCurriculum, visible: index_view.flgAddNewCurriculum()==true" type=
+                                       "button">Cancel</button>
+                                    <button class="btn btn-primary btn-xs" data-bind=
+                                       "click : index_view.saveNewCurriculum, visible: index_view.flgAddNewCurriculum()==true" type=
+                                       "button" style="background-color:#f9a42c;">+ Save Curriculum</button>
+                                 </p>
+                              </div>-->
+                           </div>
+                           <!-- <div class="modal-body"> -->
+                           <!--<div class="modal-footer">
+                              <button class="btn btn-primary btn-xs" data-bind=
+                                 "click : index_view.center_modal.submit" type=
+                                 "button">Close</button>
+                           </div>-->
+                        </div>
+                        <!--  <div class="modal-content" data-bind="visible:CentersGrid.centerModal.doSomething"> -->
+                     </div>
+                     <!-- <div class="modal-dialog modal-lg"> -->
+                  </div>
+                  <!-- <div class="modal fade" data-bind="modal:CentersGrid.center_modal.showDialog" role="dialog" tabindex="-1"> -->
+               </div>
+            </div>
+         </div>
+      </div>
+      </div>
+      </div>
+      <!-- strand modal ends -->
+      </div>  <!-- <div class="panel-body"> -->  
+      </div>   <!--  <div class="panel panel-default">-->
+      </div>  <!--     <div class="container"> -->  
+	  
+
+</body>
+</html>

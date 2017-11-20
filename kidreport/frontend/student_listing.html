@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>student detail</title>
+	
+<link href="css/Style.css" rel="stylesheet">
+<link href="javascript2.0/jqueryUI/jquery-ui.css" rel="stylesheet">	
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<script src="javascript2.0/lib/jquery-1.11.0.js" type="text/javascript"></script>
+<script src="javascript2.0/jqueryUI/jquery-ui.js" type="text/javascript"></script>
+<script src="javascript2.0/lrsConfig.dev.js" type="text/javascript"></script>
+<script src="javascript2.0/lib/paper-full.js" type="text/javascript"></script>
+<script src="javascript2.0/lrsTree.dev.js" type="text/javascript"></script>
+<script src="javascript2.0/lrsFunctions.dev.js" type="text/javascript"></script>
+<script>
+$(document).ready(function(){
+	
+});
+</script>
+
+<script type="text/javascript" >
+		
+var centerId="1166"
+		var students = {
+		
+		"items":[
+{"name":"Nuha Wadhwania","id":"1937","age":"2"},
+{"name":"Aaram Prem","id":"71287","age":"4"},
+{"name":"Divya Prabhakaran","id":"71292","age":"3"},
+{"name":"Hasini Doll","id":"71301","age":"2"},
+{"name":"Ruby Wilson","id":"1297","age":"7"},
+{"name":"Sophie Taylor","id":"1293","age":"2"},
+{"name":"Hine  Kenana","id":"6545","age":"4"},
+{"name":"Sashya Rajkumar","id":"71308","age":"2"},
+{"name":"Notice Board","id":"1297293","age":"3"},
+{"name":"Te Rangi Peihopa","id":"6546","age":"4"},
+{"name":"Whina Ngata ","id":"6544","age":"3"},
+{"name":"Aroha Peihopa","id":"6543","age":"4"},
+{"name":"John Siaw","id":"1295","age":"5"},
+{"name":"Aria Mann","id":"119457","age":"2"},
+{"name":"Dylan Thomas","id":"71285","age":"3"},
+{"name":"Caitlin Yoon","id":"1935","age":"5"},
+{"name":"Mercy Johnson","id":"1933","age":"4"},
+{"name":"Lance Chris","id":"10884","age":"5"},
+{"name":"Kevin Boyle","id":"52272","age":"1"},
+{"name":"Alex Curtis","id":"1299","age":"4"},
+{"name":"Kelly Arden","id":"52274","age":"3"}
+]
+};
+	function callLoadTree(student_index){
+				alert('callLoadTree'+student_index);'
+				showTree(students.items[student_index].id, students.items[student_index].age, 'PUBLISHED', leaf_clicked_callback,leaf_mouse_over_callback,leaf_mouse_exit_callback)
+			
+			}			
+         $(document).ready(function() {
+			
+			$( "body" ).append("<form id=\"myForm\">");
+			for(var index=0;index<students.items.length;index++){
+				var student_id = students.items[index].id;
+				var student_name = students.items[index].name;
+				//$( "body" ).append(student_id+":"+student_name+"<br/>");
+				
+				$( "body" ).append("<input onClick=\"callLoadTree('"+index+"')\" class='myradio' type=\"radio\" name=\"myRadio\" value=\""+index+"\" \/> "+student_name+" <br \/>");
+				
+			}
+
+		
+			
+		
+         });		
+		
+		
+		function retriveStoriesCallback(stories){
+			
+			
+		}
+		
+	</script>		
+</head>
+<body>
+<div id="student_listing">
+</div>
+<input type="button" onClick="showTree('1299', 3, 'PUBLISHED', leaf_clicked_callback,leaf_mouse_over_callback,leaf_mouse_exit_callback)" value="show Tree"/>
+<div id = "canvas_div" style="display:none;">
+		<input type= "hidden" value="-1" id="student_birth_month" >
+		<table>
+			<tr>
+				<td><canvas style="border:1px black;" id="canvas" width="593" height="625" ></canvas>
+				</td>
+				<td text-align="top">
+					<span id="leaf-label"></span>
+				</td>
+			</tr>
+		</table>
+</div>	
+<!--<div class="modal"></div>-->
+</body>
+</html>
